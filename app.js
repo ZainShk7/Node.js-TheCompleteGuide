@@ -7,6 +7,8 @@ const sequelize = require("./utils/database")
 //Models
 const Product = require("./models/product")
 const User = require("./models/user")
+const Cart = require("./models/cart")
+const CartItem = require("./models/cart-item")
 
 const app = express()
 //telling express that we are using template engine and where to fine it
@@ -36,6 +38,10 @@ app.use(errorController.get404)
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" })
 
 User.hasMany(Product)
+User.hasOne(Cart)
+Cart.belongsTo(User)
+Cart.belongsToMany(Product, { through: CartItem })
+Product.belongsToMany(Cart, { through: CartItem })
 
 sequelize
   // .sync({ force: true })
@@ -48,17 +54,19 @@ sequelize
   .then(user => {
     if (!user) {
       return User.create({
-        name: "Sheikh",
-        email: "sheikh@yahoo.com",
-        password: "sheikhoo"
+        name: "Zain",
+        email: "zain7@yahoo.com",
+        password: "zain1234"
       })
     }
     return user
   })
   .then(user => {
+    console.log("|| USER ||", user)
+  })
+  .then(cart => {
     app.listen(5000)
     console.log("Listening on Port 5000")
-    console.log("|| USER ||", user)
   })
   .catch(err => {
     console.log("Failed to Connect to Sequelize Database:::", err)
