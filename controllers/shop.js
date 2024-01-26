@@ -56,7 +56,9 @@ exports.getCart = (req, res, next) => {
     })
     .catch(err => console.log(err))
 }
-
+controllers / Shop.js
+cart.ejs
+app.js
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId
   req.user.getCart().then(cart => {
