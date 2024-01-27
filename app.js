@@ -3,7 +3,7 @@ const path = require("path")
 const bodyParser = require("body-parser")
 
 const errorController = require("./controllers/error")
-const mongoConnect = require("./utils/database")
+const mongoConnect = require("./utils/database").mongoConnect
 //Models
 
 const app = express()
@@ -11,15 +11,17 @@ const app = express()
 app.set("view engine", "ejs")
 app.set("views", "views")
 //own router file import
-// const adminRoutes = require("./routes/admin")
+const adminRoutes = require("./routes/admin")
 // const shopRoutes = require("./routes/shop")
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, "public")))
 
-// app.use("/admin", adminRoutes)
+app.use("/admin", adminRoutes)
 // app.use(shopRoutes)
-app.use((req, res, next) => {})
+app.use((req, res, next) => {
+  next()
+})
 
 app.use(errorController.get404)
-mongoConnect(client => app.listen(3000))
+mongoConnect(() => app.listen(5000))
