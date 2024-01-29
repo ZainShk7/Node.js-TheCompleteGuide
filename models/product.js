@@ -55,21 +55,19 @@ class Product {
         console.log(err)
       })
   }
-}
 
-// const product = sequelize.define("product", {
-//   id: {
-//     type: Sequelize.INTEGER,
-//     autoIncrement: true,
-//     allowNull: false,
-//     primaryKey: true
-//   },
-//   title: Sequelize.STRING,
-//   imageUrl: Sequelize.STRING,
-//   price: Sequelize.DOUBLE,
-//   description: Sequelize.STRING,
-//   createdAt: Sequelize.DATE,
-//   updatedAt: Sequelize.DATE
-// })
+  static deleteById(prodId) {
+    const db = getDb()
+    return db
+      .collection("products")
+      .deleteOne({ _id: new mongodb.ObjectId(prodId) })
+      .then(result => {
+        console.log("Deleted")
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+}
 
 module.exports = Product
