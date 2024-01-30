@@ -23,7 +23,7 @@ app.use(shopRoutes)
 app.use((req, res, next) => {
   User.findById("65b8d12e3819a54d6a7313a6")
     .then(user => {
-      req.user = user
+      req.user = new User(user._id, user.name, user.email, user.cart)
       next()
     })
     .catch(err => console.log(err))
