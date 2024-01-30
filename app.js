@@ -5,6 +5,7 @@ const bodyParser = require("body-parser")
 const errorController = require("./controllers/error")
 const mongoConnect = require("./utils/database").mongoConnect
 //Models
+const User = require("./models/user")
 
 const app = express()
 //telling express that we are using template engine and where to fine it
@@ -20,7 +21,12 @@ app.use(express.static(path.join(__dirname, "public")))
 app.use("/admin", adminRoutes)
 app.use(shopRoutes)
 app.use((req, res, next) => {
-  next()
+  User.findById("65b8d12e3819a54d6a7313a6")
+    .then(user => {
+      req.user = user
+      next()
+    })
+    .catch(err => console.log(err))
 })
 
 app.use(errorController.get404)
