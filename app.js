@@ -1,9 +1,9 @@
 const express = require("express")
 const path = require("path")
+const mongoose = require("mongoose")
 const bodyParser = require("body-parser")
 
 const errorController = require("./controllers/error")
-const mongoConnect = require("./utils/database").mongoConnect
 //Models
 const User = require("./models/user")
 
@@ -30,4 +30,9 @@ app.use((req, res, next) => {
 })
 
 app.use(errorController.get404)
-mongoConnect(() => app.listen(5000))
+mongoose
+  .connect("mongodb://localhost:27017/shop")
+  .then(() => {
+    app.listen(5000)
+  })
+  .catch(err => console.log(err))
