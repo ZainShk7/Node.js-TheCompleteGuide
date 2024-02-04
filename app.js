@@ -1,38 +1,54 @@
-const express = require("express")
 const path = require("path")
-const mongoose = require("mongoose")
+
+const express = require("express")
 const bodyParser = require("body-parser")
+const mongoose = require("mongoose")
 
 const errorController = require("./controllers/error")
-//Models
-// const User = require("./models/user")
+const User = require("./models/user")
 
 const app = express()
-//telling express that we are using template engine and where to fine it
+
 app.set("view engine", "ejs")
 app.set("views", "views")
-//own router file import
+
 const adminRoutes = require("./routes/admin")
 const shopRoutes = require("./routes/shop")
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, "public")))
 
+app.use((req, res, next) => {
+  User.findById("65bff2cd14bf2eec3b44945e")
+    .then(user => {
+      req.user = user
+      next()
+    })
+    .catch(err => console.log(err))
+})
+
 app.use("/admin", adminRoutes)
 app.use(shopRoutes)
-// app.use((req, res, next) => {
-//   User.findById("65b8d12e3819a54d6a7313a6")
-//     .then(user => {
-//       req.user = new User(user._id, user.name, user.email, user.cart)
-//       next()
-//     })
-//     .catch(err => console.log(err))
-// })
 
 app.use(errorController.get404)
+
 mongoose
   .connect("mongodb://localhost:27017/shop")
-  .then(() => {
+  .then(result => {
+    User.findOne().then(user => {
+      if (!user) {
+        const user = new User({
+          name: "Demo",
+          email: "demoUser@bing.com",
+          cart: {
+            items: []
+          }
+        })
+        user.save()
+      }
+    })
     app.listen(5000)
   })
-  .catch(err => console.log(err))
+  .catch(err => {
+    console.log(err)
+  })
