@@ -9,6 +9,14 @@ exports.getLogin = (req, res, next) => {
   })
 }
 
+exports.getSignup = (req, res) => {
+  res.render("auth/signup", {
+    path: "/signup",
+    pageTitle: "Signup",
+    isAuthenticated: false
+  })
+}
+
 exports.postLogin = (req, res) => {
   User.findById("65bff2cd14bf2eec3b44945e")
     .then(user => {
@@ -21,6 +29,26 @@ exports.postLogin = (req, res) => {
     })
     .catch(err => console.log(err))
   // res.setHeader("Set-Cookie", "loggedIn=true HttpOnly")
+}
+
+exports.postSignup = (req, res, next) => {
+  const { email, password, confirmPassword } = req.body
+  User.findOne({ email: email })
+    .then(userDoc => {
+      if (userDoc) {
+        return res.redirect("/signup")
+      }
+      const user = new User({
+        email: email,
+        password: password,
+        cart: { items: [] }
+      })
+      return user.save()
+    })
+    .then(() => {
+      res.redirect("/login")
+    })
+    .catch(err => console.log("err"))
 }
 
 exports.postLogout = (req, res) => {
