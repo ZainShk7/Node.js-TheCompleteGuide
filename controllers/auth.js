@@ -20,14 +20,29 @@ exports.getSignup = (req, res) => {
 }
 
 exports.postLogin = (req, res) => {
-  User.findById("65bff2cd14bf2eec3b44945e")
+  const { email, password } = req.body
+  User.findOne({ email: email })
     .then(user => {
-      req.session.user = user
-      req.session.isLoggedIn = true
-      req.session.save(err => {
-        console.log(err)
-        res.redirect("/")
-      })
+      if (!user) {
+        return res.redirect("/login")
+      }
+      bcrypt
+        .compare(password, user.password)
+        .then(doMatch => {
+          if (doMatch) {
+            req.session.user = user
+            req.session.isLoggedIn = true
+            return req.session.save(err => {
+              console.log(err)
+              res.redirect("/")
+            })
+          }
+          return res.redirect("/login")
+        })
+        .catch(err => {
+          console.log(err)
+          res.redirect("/login")
+        })
     })
     .catch(err => console.log(err))
   // res.setHeader("Set-Cookie", "loggedIn=true HttpOnly")
