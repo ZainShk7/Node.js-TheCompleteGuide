@@ -4,16 +4,30 @@ const User = require("../models/user")
 exports.getLogin = (req, res, next) => {
   // const isLoggedIn =
   //   req.get("Cookie").split(";")[1].trim().split("=")[1] === "true"
+  let message = req.flash("error")
+  if (message.length > 0) {
+    message = message[0]
+  } else {
+    message = null
+  }
   res.render("auth/login", {
     path: "/login",
-    pageTitle: "Login"
+    pageTitle: "Login",
+    errorMessage: message
   })
 }
 
 exports.getSignup = (req, res) => {
+  let message = req.flash("error")
+  if (message.length > 0) {
+    message = message[0]
+  } else {
+    message = null
+  }
   res.render("auth/signup", {
     path: "/signup",
-    pageTitle: "Signup"
+    pageTitle: "Signup",
+    errorMessage: message
   })
 }
 
@@ -22,6 +36,7 @@ exports.postLogin = (req, res) => {
   User.findOne({ email: email })
     .then(user => {
       if (!user) {
+        req.flash("error", "Invalid email/password")
         return res.redirect("/login")
       }
       bcrypt
@@ -35,6 +50,7 @@ exports.postLogin = (req, res) => {
               res.redirect("/")
             })
           }
+          req.flash("error", "Invalid email/password")
           return res.redirect("/login")
         })
         .catch(err => {
@@ -51,6 +67,7 @@ exports.postSignup = (req, res, next) => {
   User.findOne({ email: email })
     .then(userDoc => {
       if (userDoc) {
+        req.flash("error", "E-mail already exist")
         return res.redirect("/signup")
       }
       return bcrypt
